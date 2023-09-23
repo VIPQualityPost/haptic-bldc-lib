@@ -15,11 +15,6 @@ Based on "Drive by wire" interfaces and @scottbez1 SmartKnob project.
 #include SimpleFOC.h
 #include HapticBLDC.h
 
-// Default parameters or you can define your own - or leave undefined to use default
-extern PIDController haptic_pid;
-extern hapticState haptic_config;
-extern hapticParms haptic_params;
-
 BLDCMotor motor = BLDCMotor(7);
 BLDCDriver3PWM driver = BLDCDriver3PWM(U_PWM, V_PWM, W_PWM, EN);
 MagneticEncoderSPI encoder = MagneticEncoderSPI();
@@ -35,7 +30,7 @@ void setup(){
     motor.initFOC();
 
     haptic.init();
-    haptic_config->detent_num = 6; //6 positions for knob
+    haptic.haptic_config->detent_num = 6; //6 positions for knob
 
 }
 
