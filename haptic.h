@@ -1,34 +1,42 @@
 #ifndef HAPTIC_H
 #define HAPIC_H
 
-#include "Arduino.h"
-#include "SimpleFOC.h"
-#include "SimpleFOCDrivers.h"
+#include <Arduino.h>
+#include <SimpleFOC.h>
+#include <SimpleFOCDrivers.h>
+#include "encoders/mt6701/MagneticSensorMT6701SSI.h"
+#include <motor.h>
 
 typedef struct
 {
-    uint8_t detent_num = 2;  // number of points for clicks
-    uint8_t detent_num_prev = 0;
-    uint8_t detent_count = 0;
-
-    float current_detent_center;
+    
+    // Default Haptic Program Configuration
+    // TODO: ???
+    bool sfoc_voltage_control = false;
+    uint8_t start_pos = 1; // Min Pos Index 
+    uint16_t end_pos = 255; // Max Pos Index
+    uint16_t total_pos = end_pos - start_pos +1;
+    uint16_t detent_count = 0; //??
+    uint16_t last_pos = 0; // Record last position for a recall
     float attract_angle = 0; // angle where PID will point to
-
-    uint8_t pos = 0;
-    uint8_t min_pos = 0; // in terms of position index
-    uint8_t max_pos = 1; // in terms of position index
-    float pos_width_rad = detent_num/6.28;
-
-    float snap_point = 0.055;
-    float snap_point_bias = 0;
-
-    float click_strength = 5;
-    float detent_strength_unit = 0;
-    float endstop_strength_unit = 0;
+    float last_attract_angle = 0;
+    uint16_t current_pos = 1; // Current Actual Position
+    float distance_space = 5; // Distance in Degrees
+    float distance_pos = distance_space * _PI / 180; // Define attractior distance position and convert it to radians
+    float click_strength = sfoc_voltage_control ? 5 : 1; // 
+    float detent_strength_unit = sfoc_voltage_control ? 3 : 0.6;
+    float endstop_strength_unit = sfoc_voltage_control ? 2 : 0.4;
 } hapticState;
 
+
 typedef struct
 {
+
+    // Exponentially Weighted Moving Average (EWMA)
+    // Used to correct PID, if position near alignment centre
+    // but not there yet, adjust slowly to the centre
+    // NOT USING
+
     float dead_zone_percent = 0.2;
     float dead_zone_rad = _PI/180;
 
@@ -67,9 +75,10 @@ public:
 protected:
 private:
     void find_detent(void);
+    void update_position(void);
+    void state_update(void);
     float haptic_target(void);
     void correct_pid(void);
-    void correct_idle(void);
 };
 
 #endif
