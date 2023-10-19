@@ -166,5 +166,8 @@ void HapticInterface::correct_idle(void)
         haptic_config->current_detent_center += haptic_config->pos_width_rad;
         angle_to_detent_center -= haptic_config->pos_width_rad;
         haptic_config->pos--;
-    }else if(angle_to_detent_center < snap_point_rad_inc && (haptic_config->detent_num))
+    }else if (angle_to_detent_center < snap_point_rad_inc && (haptic_config->detent_num <= 0 || haptic_config->pos < haptic_config->min_pos)) {
+            haptic_config->current_detent_center -= haptic_config->pos_width_rad;
+            angle_to_detent_center += haptic_config->pos_width_rad;
+            haptic_config->pos++;
 }
