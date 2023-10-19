@@ -170,4 +170,5 @@ void HapticInterface::state_update(void)
         Serial.print("[POS]: ");
         Serial.println(haptic_config->current_pos);
     }
+
 }
